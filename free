@@ -1,0 +1,22 @@
+#!/bin/bash
+#La linea siguiente no reporta valores de forma coherente.  La formula corresponde a lo indicado por Apple.
+#echo -n "MB free : ";free=`vm_stat | grep free | cut -d ":" -f 2 | sed 's/.$//g'`; bc <<< "$free * 4096 / 1024 / 1024"
+totalram1=`top -l 1 | grep PhysMem | cut -d " " -f 2`
+totalram2=`top -l 1 | grep PhysMem | cut -d " " -f 6`
+if [ ${totalram1: -1} == "G" ]; then
+	totalram1=`echo -n $totalram1 | sed 's/G//g'`
+	totalram1=`bc <<< "$totalram1 * 1024"`
+else
+	totalram1=`echo -n $totalram1 | sed 's/M//g'`
+fi
+if [ ${totalram2: -1} == "G" ]; then
+        totalram2=`echo -n $totalram2 | sed 's/G//g';`
+	totalram2=`bc <<< "$totalram2 * 1024"`
+else
+        totalram2=`echo -n $totalram2 | sed 's/M//g'`
+fi
+#echo $totalram1 $totalram2
+#echo -n "Total MB : "; totalram1=`top -l 1 | grep PhysMem | cut -d " " -f 2 | sed 's/M//g'`; totalram2=`top -l 1 | grep PhysMem | cut -d " " -f 6 | sed 's/M//g'`; bc <<< "$totalram1 + $totalram2"
+echo "MB free : $totalram2"
+echo -n "Total MB : "; bc <<< "$totalram1 + $totalram2"
+echo -n "Uso de SWAP : "; sysctl vm.swapusage
